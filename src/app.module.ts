@@ -3,8 +3,21 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { CargoModule } from './cargo/cargo.module.js';
+import { DemandaPrioridadeModule } from './demanda-prioridade/demanda-prioridade.module.js';
+import { DemandaStatusModule } from './demanda-status/demanda-status.module.js';
 import { LocalModule } from './local/local.module.js';
+import { PessoaModule } from './pessoa/pessoa.module.js';
+import { SenioridadeModule } from './senioridade/senioridade.module.js';
+import { SetorModule } from './setor/setor.module.js';
+import { SolicitacaoStatusModule } from './solicitacao-status/solicitacao-status.module.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsuarioModule } from './usuario/usuario.module.js';
+import { LocalPorUsuarioModule } from './local-por-usuario/local-por-usuario.module.js';
+import { SolicitacoesModule } from './solicitacoes/solicitacoes.module.js';
+import { DemandaModule } from './demanda/demanda.module.js';
+import { DemandaStatusMovimentoModule } from './demanda-status-movimento/demanda-status-movimento.module.js';
+import { DemandaParticipanteModule } from './demanda-participante/demanda-participante.module.js';
 
 @Module({
   imports: [
@@ -28,7 +41,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: false, // impede alterações nas tabelas
     }),
   }),
-    LocalModule],
+    LocalModule,
+    CargoModule,
+    SenioridadeModule,
+    SolicitacaoStatusModule,
+    DemandaStatusModule,
+    DemandaPrioridadeModule,
+    PessoaModule,
+    SetorModule,
+    UsuarioModule,
+    LocalPorUsuarioModule,
+    SolicitacoesModule,
+    DemandaModule,
+    DemandaStatusMovimentoModule,
+    DemandaParticipanteModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
