@@ -5,6 +5,9 @@ import { AppModule } from './app.module.js';
 async function bootstrap() { // função responsavel por inicializar a aplicacao
   const app = await NestFactory.create(AppModule); // cria uma app usando modulo global
 
+  app. enableCors({
+    origin: 'http://localhost:4200',
+  })
   // configura validação antes do server começar
   // a receber requisições 
     app.useGlobalPipes(
