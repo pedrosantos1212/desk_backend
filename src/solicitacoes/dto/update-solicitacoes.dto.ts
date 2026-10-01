@@ -1,5 +1,5 @@
 import { PartialType, PickType } from '@nestjs/mapped-types';
-import { CreateSolicitacaoDto } from './create-solicitacao.dto.js';
+import { CreateSolicitacaoDto } from './create-solicitacoes.dto.js';
 
 export class UpdateSolicitacaoDto extends PartialType(
   PickType(

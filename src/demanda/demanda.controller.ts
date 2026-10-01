@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { DemandaService } from './demanda.service.js';
 import { CreateDemandaDto } from './dto/create-demanda.dto.js';
 import { UpdateDemandaDto } from './dto/update-demanda.dto.js';
@@ -18,17 +26,15 @@ export class DemandaController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.demandaService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.demandaService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDemandaDto: UpdateDemandaDto) {
-    return this.demandaService.update(+id, updateDemandaDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.demandaService.remove(+id);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDemandaDto: UpdateDemandaDto,
+  ) {
+    return this.demandaService.update(id, updateDemandaDto);
   }
 }

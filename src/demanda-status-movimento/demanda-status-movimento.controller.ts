@@ -1,34 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { DemandaStatusMovimentoService } from './demanda-status-movimento.service.js';
 import { CreateDemandaStatusMovimentoDto } from './dto/create-demanda-status-movimento.dto.js';
-import { UpdateDemandaStatusMovimentoDto } from './dto/update-demanda-status-movimento.dto.js';
 
 @Controller('demanda-status-movimento')
 export class DemandaStatusMovimentoController {
-  constructor(private readonly demandaStatusMovimentoService: DemandaStatusMovimentoService) {}
+  constructor(
+    private readonly movimentoService: DemandaStatusMovimentoService,
+  ) {}
 
   @Post()
-  create(@Body() createDemandaStatusMovimentoDto: CreateDemandaStatusMovimentoDto) {
-    return this.demandaStatusMovimentoService.create(createDemandaStatusMovimentoDto);
+  create(@Body() createMovimentoDto: CreateDemandaStatusMovimentoDto) {
+    return this.movimentoService.create(createMovimentoDto);
   }
 
   @Get()
   findAll() {
-    return this.demandaStatusMovimentoService.findAll();
+    return this.movimentoService.findAll();
+  }
+
+  @Get('demanda/:demandaId')
+  findByDemanda(
+    @Param('demandaId', ParseIntPipe) demandaId: number,
+  ) {
+    return this.movimentoService.findByDemanda(demandaId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.demandaStatusMovimentoService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDemandaStatusMovimentoDto: UpdateDemandaStatusMovimentoDto) {
-    return this.demandaStatusMovimentoService.update(+id, updateDemandaStatusMovimentoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.demandaStatusMovimentoService.remove(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.movimentoService.findOne(id);
   }
 }

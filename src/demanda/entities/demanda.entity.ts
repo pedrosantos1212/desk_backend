@@ -10,7 +10,7 @@ import {
 
 import { DemandaPrioridade } from '../../demanda-prioridade/demanda-prioridade.entity.js';
 import { Setor } from '../../setor/setor.entity.js';
-import { Solicitacao } from '../../solicitacoes/entities/solicitacao.entity.js';
+import { Solicitacao } from '../../solicitacoes/entities/solicitacoes.entity.js';
 
 @Entity('demanda')
 export class Demanda {

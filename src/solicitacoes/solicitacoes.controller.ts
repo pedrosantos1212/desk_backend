@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { SolicitacoesService } from './solicitacoes.service.js';
-import { CreateSolicitacaoDto } from './dto/create-solicitacao.dto.js';
-import { UpdateSolicitacaoDto } from './dto/update-solicitacao.dto.js';
+import { CreateSolicitacaoDto } from './dto/create-solicitacoes.dto.js';
+import { UpdateSolicitacaoDto } from './dto/update-solicitacoes.dto.js';
 
 @Controller('solicitacoes')
 export class SolicitacoesController {
@@ -18,17 +26,15 @@ export class SolicitacoesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.solicitacoesService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.solicitacoesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSolicitacaoDto: UpdateSolicitacaoDto) {
-    return this.solicitacoesService.update(+id, updateSolicitacaoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.solicitacoesService.remove(+id);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSolicitacaoDto: UpdateSolicitacaoDto,
+  ) {
+    return this.solicitacoesService.update(id, updateSolicitacaoDto);
   }
 }
