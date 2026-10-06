@@ -1,68 +1,101 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto.js';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity.js';
-import { Repository } from 'typeorm';
+import { Pessoa } from '../pessoa/pessoa.entity.js';
 
 @Injectable()
 export class UsuarioService {
-
   constructor(
     @InjectRepository(Usuario)
-    private readonly usuario:Repository<Usuario>
-  ){}
+    private readonly usuarioRepository: Repository<Usuario>,
+    @InjectRepository(Pessoa)
+    private readonly pessoaRepository: Repository<Pessoa>,
+  ) {}
 
   async create(createDTO: CreateUsuarioDto): Promise<Usuario> {
-  // senha assim por causa do select
-  const { senha, ...dadosUsuario } = createDTO; 
+    const pessoa = await this.pessoaRepository.findOneBy({
+      id: createDTO.pessoaId,
+      status: true,
+    });
 
-  const entity = this.usuario.create({
-    ...dadosUsuario,
-    senhaHash: senha,
-  });
+    if (!pessoa) {
+      throw new NotFoundException('Pessoa ativa nao encontrada');
+    }
 
-  const usuarioSalvo = await this.usuario.save(entity);
+    const usuarioExistente = await this.usuarioRepository.findOneBy({
+      pessoaId: createDTO.pessoaId,
+    });
 
-  return this.findOne(usuarioSalvo.id);
-}
+    if (usuarioExistente) {
+      throw new ConflictException('Esta pessoa ja possui um usuario');
+    }
+
+    const entity = this.usuarioRepository.create({
+      ...createDTO,
+      senhaHash: null,
+    });
+    const usuarioSalvo = await this.usuarioRepository.save(entity);
+
+    return this.findOne(usuarioSalvo.id);
+  }
 
   findAll(): Promise<Usuario[]> {
-    return this.usuario.find();
+    return this.usuarioRepository.find({
+      relations: {
+        pessoa: true,
+        cargo: true,
+        senioridade: true,
+        setor: true,
+      },
+      order: {
+        id: 'ASC',
+      },
+    });
   }
 
   async findOne(id: number): Promise<Usuario> {
-    const entity = await this.usuario.findOneBy({id})
+    const entity = await this.usuarioRepository.findOne({
+      where: { id },
+      relations: {
+        pessoa: true,
+        cargo: true,
+        senioridade: true,
+        setor: true,
+      },
+    });
 
     if (!entity) {
-          throw new NotFoundException(`Usuario com id ${id} não encontrado`);
-        }
+      throw new NotFoundException(`Usuario com id ${id} nao encontrado`);
+    }
 
     return entity;
   }
 
-  async update(id: number, updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
-    const entity = await this.findOne(id)
-    if (updateUsuarioDto.cargoId !== undefined) {
-      entity.cargoId = updateUsuarioDto.cargoId;
-    }
+  async update(
+    id: number,
+    updateUsuarioDto: UpdateUsuarioDto,
+  ): Promise<Usuario> {
+    const entity = await this.findOne(id);
 
-    if (updateUsuarioDto.senioridadeId !== undefined) {
-      entity.senioridadeId = updateUsuarioDto.senioridadeId;
-    }
+    Object.assign(entity, updateUsuarioDto);
+    await this.usuarioRepository.save(entity);
 
-    if (updateUsuarioDto.setorId !== undefined) {
-      entity.setorId = updateUsuarioDto.setorId;
-    }
-    
-    return this.usuario.save(entity);
+    return this.findOne(id);
   }
 
-  async deativate(id: number): Promise<Usuario> {
-    const entity = await this.findOne(id)
-    
-    entity.status = false;
+  async deactivate(id: number): Promise<Usuario> {
+    const entity = await this.findOne(id);
 
-    return this.usuario.save(entity);
+    entity.status = false;
+    await this.usuarioRepository.save(entity);
+
+    return this.findOne(id);
   }
 }

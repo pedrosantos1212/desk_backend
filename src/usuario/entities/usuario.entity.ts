@@ -1,7 +1,7 @@
 import {
   Column,
   Entity,
-  JoinColumn, // informa a coluna fisica que guarda a chave estrangeira da relação
+  JoinColumn, // informa a coluna fisica que guarda a chave estrangeira da relacao
   ManyToOne, // representa o relacionamento 1:n
   OneToOne, // relacionamento 1:1
   PrimaryGeneratedColumn,
@@ -52,7 +52,8 @@ export class Usuario {
     name: 'senha_hash',
     type: 'varchar',
     length: 255,
-    select: false, // não traz senha em consultas comuns
+    nullable: true, // permite cadastrar sem senha enquanto nao ha autenticacao
+    select: false, // nao traz senha em consultas comuns
   })
-  senhaHash: string;
+  senhaHash: string | null;
 }

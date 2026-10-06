@@ -12,19 +12,47 @@ export class SolicitacoesService {
     private readonly solicitacaoRepository: Repository<Solicitacao>,
   ) {}
 
-  create(createSolicitacaoDto: CreateSolicitacaoDto): Promise<Solicitacao> {
+  async create(createSolicitacaoDto: CreateSolicitacaoDto): Promise<Solicitacao> {
     // create monta o objeto na memoria usando os dados recebidos
     const solicitacao = this.solicitacaoRepository.create(createSolicitacaoDto);
 
-    return this.solicitacaoRepository.save(solicitacao);
+    const solicitacaoSalva = await this.solicitacaoRepository.save(solicitacao)
+
+    return this.findOne(solicitacaoSalva.id)
   }
 
   findAll(): Promise<Solicitacao[]> {
-    return this.solicitacaoRepository.find();
+    return this.solicitacaoRepository.find({
+      relations: {
+        solicitante: {
+          pessoa: true,
+        },
+        criadoPor: {
+          pessoa: true,
+        },
+        solicitacaoStatus: true,
+      },
+      order: {
+        dataCriacao: 'DESC',
+      },
+    });
   }
 
   async findOne(id: number): Promise<Solicitacao> {
-    const solicitacao = await this.solicitacaoRepository.findOneBy({ id });
+    const solicitacao = await this.solicitacaoRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        solicitante: {
+          pessoa: true,
+        },
+        criadoPor: {
+          pessoa: true,
+        },
+        solicitacaoStatus: true,
+      },
+    });
 
     if (!solicitacao) {
       throw new NotFoundException(
@@ -58,6 +86,8 @@ export class SolicitacoesService {
         updateSolicitacaoDto.solicitacaoStatusId;
     }
 
-    return this.solicitacaoRepository.save(solicitacao);
+    await this.solicitacaoRepository.save(solicitacao);
+
+    return this.findOne(id)
   }
 }

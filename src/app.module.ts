@@ -18,6 +18,7 @@ import { SolicitacoesModule } from './solicitacoes/solicitacoes.module.js';
 import { DemandaModule } from './demanda/demanda.module.js';
 import { DemandaStatusMovimentoModule } from './demanda-status-movimento/demanda-status-movimento.module.js';
 import { DemandaParticipanteModule } from './demanda-participante/demanda-participante.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
@@ -38,7 +39,7 @@ import { DemandaParticipanteModule } from './demanda-participante/demanda-partic
       database: configService.getOrThrow<string>('DB_DATABASE'),
       schema: configService.getOrThrow<string>('DB_SCHEMA'),
       autoLoadEntities: true, // carrega as entidades 
-      synchronize: false, // impede alterações nas tabelas
+      synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true', // alterações nas tabelas
     }),
   }),
     LocalModule,
@@ -55,6 +56,7 @@ import { DemandaParticipanteModule } from './demanda-participante/demanda-partic
     DemandaModule,
     DemandaStatusMovimentoModule,
     DemandaParticipanteModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

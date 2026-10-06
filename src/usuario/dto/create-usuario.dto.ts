@@ -1,23 +1,19 @@
-import { IsInt, IsPositive, IsString, MinLength } from "class-validator";
+import { IsInt, IsPositive } from 'class-validator';
 
 export class CreateUsuarioDto {
- @IsInt()
- @IsPositive() // valor não sera 0 nem negativo
+  @IsInt()
+  @IsPositive() // valor nao sera 0 nem negativo
+  pessoaId: number;
+
+  @IsInt()
+  @IsPositive()
   cargoId: number;
 
   @IsInt()
- @IsPositive()
+  @IsPositive()
   senioridadeId: number;
 
-   @IsInt()
- @IsPositive()
-  pessoaId: number;
-
-   @IsInt()
- @IsPositive()
+  @IsInt()
+  @IsPositive()
   setorId: number;
-
-  @IsString()
-  @MinLength(8)
-  senha: string;
 }
